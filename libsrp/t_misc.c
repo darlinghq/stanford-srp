@@ -108,9 +108,7 @@ t_envhash(out)
  * to your current directory when the program is run.
  *
  * For good measure, it also performs an fstat on the standard input,
- * usually your tty, throws that into the buffer, creates a file in
- * /tmp (the inode is unpredictable on a busy system), and runs stat()
- * on that before deleting it.
+ * usually your tty, and throws that into the buffer.
  *
  * The entire buffer is run once through SHA to obtain the final result.
  */
@@ -144,11 +142,6 @@ t_fshash(out)
 
   if(fstat(0, &st) >= 0)
     SHA1Update(&ctxt, (unsigned char *) &st, sizeof(st));
-
-  sprintf(dotpath, "/tmp/rnd.%d", getpid());
-  if(creat(dotpath, 0600) >= 0 && stat(dotpath, &st) >= 0)
-    SHA1Update(&ctxt, (unsigned char *) &st, sizeof(st));
-  unlink(dotpath);
 
   SHA1Final(out, &ctxt);
 }
