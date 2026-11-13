@@ -694,6 +694,11 @@ BigIntegerModExp(r, b, e, m, c, a)
   if(default_modexp) {
     (*default_modexp)(r, b, e, m, c, a);
   }
+  /* The exponent is usually a secret (password hash, ephemeral value), so use
+     the constant-time exponentiation, which needs an odd modulus. */
+  else if(BN_is_odd(m)) {
+    BN_mod_exp_mont_consttime(r, b, e, m, c, a);
+  }
   else if(a == NULL) {
     BN_mod_exp(r, b, e, m, c);
   }
